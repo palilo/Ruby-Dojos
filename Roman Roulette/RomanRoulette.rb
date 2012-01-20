@@ -3,58 +3,27 @@ class RomanRoulette
 	attr_reader :survivor
 		
 	def initialize n, k
-		circle = CircularList.new
-		circle.puts (1..n)
-		@k = k
-		@survivor = calculate_survivor circle, 0
+		@circle = Array.new
+		(1..n).each { |i| @circle << i }
+		@skip = k
+		@last_kill = 0
+		@survivor = calculate_survivor
 	end
 	
-	def calculate_survivor circle, position
-		if circle.length == 1
-			return circle.get 0
+	def calculate_survivor
+		if @circle.length == 1
+			return @circle[0]
 		end
-		
-		index_to_kill = position + @k - 1
-		circle.delete_at index_to_kill 
-		
-		calculate_survivor circle, index_to_kill
+		kill
+		calculate_survivor
 	end
 	
-end
-
-class CircularList
-	
-	def initialize
-		@list = Array.new
+	def kill
+		@last_kill = next_index_to_kill
+		@circle.delete_at @last_kill
 	end
 	
-	def puts sequence
-		sequence.each { | element |
-			self << element	
-		}
-	end
-	
-	def << element
-		@list << element
-	end
-	
-	def length
-		@list.length
-	end
-	
-	def get i
-		if i > length 
-			@list[(i % length) + 1]
-		else
-			@list[i % length]
-		end
-	end
-	
-	def delete_at i
-		if i > length  
-			@list.delete_at ((i % length) + 1)
-		else
-			@list.delete_at (i % length)	
-		end
-	end
+	def next_index_to_kill
+		(@last_kill + @skip - 1) % @circle.length
+	end 
 end
