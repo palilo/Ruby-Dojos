@@ -1,23 +1,24 @@
 class RomanRoulette
 
 	attr_reader :survivor
+	STARTING_POINT = 0
 		
-	def initialize n, k
-		circle = CircularList.new
-		circle.puts (1..n)
-		@k = k
-		@survivor = calculate_survivor circle, 0
+	def initialize amount_of_people, steps_to_kill
+		circleOfDeath = CircularList.new
+		circleOfDeath.puts (1..amount_of_people)
+		@steps_to_kill = steps_to_kill
+		@survivor = calculate_survivor circleOfDeath, STARTING_POINT
 	end
 	
-	def calculate_survivor circle, position
-		if circle.length == 1
-			return circle.get 0
+	def calculate_survivor circleOfDeath, position
+		if circleOfDeath.length == 1
+			return circleOfDeath.get 0
 		end
 		
-		index_to_kill = position + @k - 1
-		circle.delete_at index_to_kill 
+		index_to_kill = position + @steps_to_kill - 1
+		circleOfDeath.delete_at index_to_kill 
 		
-		calculate_survivor circle, index_to_kill
+		calculate_survivor circleOfDeath, index_to_kill
 	end
 	
 end
@@ -43,18 +44,14 @@ class CircularList
 	end
 	
 	def get i
-		if i > length 
-			@list[(i % length) + 1]
-		else
-			@list[i % length]
-		end
+		@list[real_index_of i]
 	end
 	
 	def delete_at i
-		if i > length  
-			@list.delete_at ((i % length) + 1)
-		else
-			@list.delete_at (i % length)	
-		end
+		@list.delete_at real_index_of i
+	end
+	
+	def real_index_of i
+		i > length ? ((i % length) + 1) : (i % length)
 	end
 end
